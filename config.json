@@ -1,0 +1,8 @@
+{
+    "sitemaps": [
+        {
+            "url": "https://example.com/sitemap.xml",
+            "name": "example.com"
+        }
+    ]
+} 
