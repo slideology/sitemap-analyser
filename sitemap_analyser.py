@@ -136,16 +136,16 @@ class SitemapAnalyser:
 def main():
     analyser = SitemapAnalyser()
     
-    # 设置每天运行的时间（例如每天凌晨2点）
-    schedule.every().day.at("02:00").do(analyser.run_analysis)
+    # # 设置每天运行的时间（例如每天凌晨2点）
+    # schedule.every().day.at("02:00").do(analyser.run_analysis)
     
     # 首次运行
     analyser.run_analysis()
     
-    # 持续运行调度器
-    while True:
-        schedule.run_pending()
-        time.sleep(60)
+    # # 持续运行调度器
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(60)
 
 if __name__ == "__main__":
     main() 
