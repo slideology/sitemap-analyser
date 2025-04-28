@@ -1,8 +1,32 @@
 {
     "sitemaps": [
         {
+            "url": "https://scratch.mit.edu/explore/projects/all/",
+            "name": "scratch_projects"
+        },
+        {
+            "url": "https://neal.fun/sitemap.xml",
+            "name": "neal.fun"
+        },
+        {
+            "url": "https://wordly.org/sitemap.xml",
+            "name": "wordly.org"
+        },
+        {
             "url": "https://www.crazygames.com/en/sitemap",
-            "name": "crazygames.com.en"
+            "name": "crazygames.com"
+        },
+        {
+            "url": "https://www.miniplay.com/sitemap-general.xml",
+            "name": "miniplay.com"
+        },
+        {
+            "url": "https://azgames.io/sitemap.xml",
+            "name": "azgames.io"
+        },
+        {
+            "url": "https://1games.io/sitemap.xml",
+            "name": "1games.io"
         }
     ]
-} 
+}
