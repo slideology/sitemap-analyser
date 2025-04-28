@@ -1,4 +1,7 @@
 {
+    "webhook": {
+        "url": "https://open.feishu.cn/open-apis/bot/v2/hook/72fa88c0-a98a-4d33-a68a-2d05aee0c427"
+    },
     "sitemaps": [
         {
             "url": "https://scratch.mit.edu/explore/projects/all/",
@@ -17,7 +20,7 @@
             "name": "crazygames.com"
         },
         {
-            "url": "https://www.miniplay.com/sitemap-general.xml",
+            "url": "https://www.miniplay.com/sitemap-games-3.xml",
             "name": "miniplay.com"
         },
         {
@@ -27,6 +30,19 @@
         {
             "url": "https://1games.io/sitemap.xml",
             "name": "1games.io"
+        },
+        {
+            "url": "https://thatsnot-myneighbor.io/sitemap.xml",
+            "name": "thatsnot-myneighbor.io"
+        },
+        {
+            "url": "https://geometrygame.org/sitemap.xml",
+            "name": "geometrygame.org"
+        },
+        {
+            "url": "https://wordhurdle.co/sitemap.xml",
+            "name": "wordhurdle.co"
         }
+
     ]
 }

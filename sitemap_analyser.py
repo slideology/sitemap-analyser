@@ -10,6 +10,8 @@ from datetime import datetime
 from lxml import etree
 from typing import List, Dict, Set
 import logging
+from webhook_sender import create_webhook_sender
+from datetime import datetime
 
 # 配置日志
 logging.basicConfig(
@@ -193,8 +195,60 @@ class SitemapAnalyser:
     def run_analysis(self):
         """运行所有sitemap分析"""
         logger.info("开始分析sitemaps...")
+        
+        # 创建 Webhook 发送器
+        webhook_sender = create_webhook_sender(self.config_path)
+        
+        # 收集所有分析结果
+        analysis_results = []
+        total_new_urls = 0
+        
         for sitemap in self.config['sitemaps']:
-            self.analyse_sitemap(sitemap)
+            try:
+                # 获取新的内容
+                content = self.fetch_sitemap(sitemap['url'])
+                new_urls = self.parse_sitemap(content, sitemap['url'])
+                
+                # 获取本地存储的URL
+                old_urls = self.load_local_sitemap(sitemap['name'])
+                
+                # 计算新增的URL
+                diff_urls = new_urls - old_urls
+                
+                if diff_urls:
+                    logger.info(f"发现 {len(diff_urls)} 个新URL: {sitemap['name']}")
+                    self.save_diff(sitemap['name'], diff_urls)
+                    total_new_urls += len(diff_urls)
+                    
+                    # 添加到分析结果
+                    analysis_results.append({
+                        'site': sitemap['name'],
+                        'urls': list(diff_urls)
+                    })
+                
+                # 更新本地存储
+                self.save_sitemap(sitemap['name'], new_urls)
+                
+            except Exception as e:
+                logger.error(f"处理 {sitemap['name']} 失败: {str(e)}")
+                
+        # 如果有新的URL，发送webhook通知
+        if analysis_results and webhook_sender:
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            title = f"Sitemap分析报告 - {current_time}"
+            
+            summary = {
+                'total_sites': len(self.config['sitemaps']),
+                'total_new_urls': total_new_urls
+            }
+            
+            # 发送汇总信息
+            webhook_sender.send_summary(title, summary)
+            
+            # 分别发送每个网站的详细信息
+            for item in analysis_results:
+                webhook_sender.send_site_details(item['site'], item['urls'])
+        
         logger.info("sitemap分析完成")
 
 
