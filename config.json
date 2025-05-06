@@ -24,8 +24,16 @@
             "name": "wordle2.io"
         },
         {
+            "url": "https://pokerogue.io/sitemap.xml",
+            "name": "pokerogue.io"
+        },
+        {
             "url": "https://www.miniplay.com/sitemap-games-3.xml",
             "name": "miniplay.com"
+        },
+        {
+            "url": "https://cookie-clicker2.com/sitemap.xml",
+            "name": "cookie-clicker2.com"
         },
         {
             "url": "https://azgames.io/sitemap.xml",
