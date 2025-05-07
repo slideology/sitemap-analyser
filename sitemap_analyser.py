@@ -255,9 +255,9 @@ class SitemapAnalyser:
 if __name__ == "__main__":
     analyser = SitemapAnalyser()
 
-    # 设置每天凌晨2点运行
-    schedule.every().day.at("02:00").do(analyser.run_analysis)
-    logger.info("定时任务已设置：每天凌晨2点自动运行")
+    # 设置每小时运行
+    schedule.every().hour.do(analyser.run_analysis)
+    logger.info("定时任务已设置：每小时自动运行")
 
     # 首次运行
     logger.info("执行首次分析...")
