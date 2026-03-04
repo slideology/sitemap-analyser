@@ -3,38 +3,61 @@ name: Daily Sitemap Analysis
 on:
   schedule:
     - cron: '0 18 * * *'  # 每天UTC 18:00 运行（北京时间凌晨2:00）
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:  # 允许手动触发（在 GitHub 网页上点按钮就能运行）
+
+# 授予写入权限，以便 Action 能提交分析结果到仓库
+permissions:
+  contents: write
 
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 30  # 最多运行30分钟，防止卡死
+
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # 获取完整历史以便正确处理数据分支
-    
+        fetch-depth: 1  # 只拉取最新一次提交，加快速度
+
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.9'
-        
+        python-version: '3.11'
+        cache: 'pip'  # 缓存 pip 依赖，加快下次安装速度
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        
+
     - name: Run sitemap analysis
-      run: python sitemap_analyser.py
-      
-    - name: Configure Git
+      # 如果配置了飞书 Webhook Secret，则用 Secret 覆盖 config.json 中的值
+      env:
+        FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        
-    - name: Commit and push changes
+        # 如果设置了 GitHub Secret，动态替换 config.json 中的 webhook 地址
+        if [ -n "$FEISHU_WEBHOOK_URL" ]; then
+          echo "使用 GitHub Secrets 中的飞书 Webhook URL"
+          python -c "
+        import json
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+        import os
+        config['webhook']['url'] = os.environ['FEISHU_WEBHOOK_URL']
+        with open('config.json', 'w') as f:
+            json.dump(config, f, indent=4, ensure_ascii=False)
+        print('config.json 已更新')
+          "
+        fi
+        python sitemap_analyser.py
+
+    - name: Commit and push analysis results
       run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        # 添加 sitemaps 快照和 diff 差异文件
         git add sitemaps/ diff/
-        git commit -m "Update sitemap analysis results for $(date +'%Y-%m-%d')" || echo "No changes to commit"
-        git push origin HEAD:main
+        # 如果没有变化，commit 会报错，用 || echo 忽略
+        git commit -m "🤖 Auto: sitemap analysis $(date +'%Y-%m-%d %H:%M UTC')" || echo "没有新变化，无需提交"
+        git push origin HEAD:main || echo "推送失败或无需推送"
